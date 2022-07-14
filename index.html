@@ -413,6 +413,106 @@ class Engine {
   }
 } 
 
+class Map {
+  constructor(){
+    this.name = "";
+    this.width = 0;
+    this.height = 0;
+    this.tileWidth = 16;
+    this.tileHeight = 16;    
+    
+    this.data = [];
+  }
+  
+  create(name,width,height,tileWidth,tileHeight){
+    this.name = name;
+    this.width = width;
+    this.height = height;
+    this.tileWidth = tileWidth;
+    this.tileHeight = tileHeight;
+    
+    var i = 0;
+    this.data = [];
+    for(i=0;i<(this.width*this.height);i++){
+      this.data.push(-1);
+    }
+  }
+  
+  fill(tile){
+    var i = 0;
+    for(i=0;i<this.data.length;i++){
+      this.data[i]=tile;
+    }
+  }
+    
+  setTile(x,y,tile){
+    var index = y*this.width+x;
+    this.data[index]=tile;
+  }
+  
+  getTile(x,y){
+    var index = y*this.width+x;
+    return this.data[index];
+  }
+}
+
+class EntityTilemap extends Entity {
+  constructor(engine,name){
+    super(engine,name);
+    
+    this.map = new Map();
+    this.map.create("test",20,15,16,16);
+    
+    var i = 0;
+    for(i=0;i<this.map.width;i++){
+      this.map.setTile(i,0,1);
+      this.map.setTile(i,this.map.height-1,1);
+    }
+    for(i=0;i<this.map.height;i++){
+      this.map.setTile(0,i,1);
+      this.map.setTile(this.map.width-1,i,1);
+    }
+  }
+  
+  paint(){
+    var i = 0;
+    var j = 0;
+    var t = 0;
+    var g = this.engine.graphics;
+    var px = 0;
+    var py = 0;
+    var tw = this.map.tileWidth;
+    var th = this.map.tileHeight;
+    var c = new Color();
+
+    py = 0;
+    for(j=0;j<this.map.height;j++){
+      px = 0;
+      for(i=0;i<this.map.width;i++){
+        t = this.map.getTile(i,j);
+        
+        if (t>=0){
+          if (t==0){
+            c.setARGB(255,0,0,0);
+          } else if (t==1){
+            c.setARGB(255,128,128,128);
+          }
+          g.fillRect(px,py,tw,th,c);
+        }
+        
+        px += tw;        
+        if (px>=this.engine.width){
+          i = this.map.width;
+        }
+      }
+      py += th;
+      if (py>=this.engine.height){
+        j = this.map.height;
+      }
+    }
+  }
+}
+
 class EntityTestMouse extends Entity {
   constructor(engine){
     super(engine,"entitytestmouse");
@@ -538,6 +638,10 @@ class EngineTest extends Engine {
     super("EngineTest",320,240);
     
     var entity = null;
+    
+    entity = new EntityTilemap(this,"tilemap");
+    this.entities.add(entity);
+    
     entity = new EntityTestMouse(this);
     this.entities.add(entity);
     
@@ -546,7 +650,7 @@ class EngineTest extends Engine {
   }
   
   paint() {
-    this.graphics.clear(Color.fromARGB(255,255,215,0));
+    this.graphics.clear(Color.fromARGB(255,0,0,0));
     
     this.graphics.drawLine(0,0,this.graphics.width,this.graphics.height,Color.black());
     this.graphics.drawLine(this.graphics.width,0,0,this.graphics.height,Color.black());
