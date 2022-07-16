@@ -286,7 +286,7 @@ class Graphics {
     } 
   }  
 
-  fillRect(x,y,w,h,color){
+  fillRect(x,y,w,h,color){  
     var i = 0;
     var j = 0;
     
@@ -295,6 +295,63 @@ class Graphics {
         this.setPixel(x+i,y+j,color);
       }
     }
+  }
+
+  drawHLine(x1,x2,y,color){
+    var px1 = x1;
+    var px2 = x2;
+    var i = 0;
+    
+    if (px1>px2){
+      i = px1;
+      px1 = px2;
+      px2 = i;
+    }
+    
+    if (px1<0) px1=0;
+    if (px2>this.width) px2=this.width;
+    
+    for(i=px1;i<px2;i++){
+      this.setPixel(i,y,color);
+    }
+  }
+  
+  fillTriangle(x1,y1,x2,y2,x3,y3,color){
+    var i = 0;
+    
+    if (y1>y3){
+      i = y1;
+      y1 = y3;
+      y3 = i;
+      
+      i = x1;
+      x1 = x3;
+      x3 = i;
+    }    
+    
+    if (y1>y2){
+      i = y1;
+      y1 = y2;
+      y2 = i;
+      
+      i = x1;
+      x1 = x2;
+      x2 = i;
+    }
+    
+    if (y2>y3){
+      i = y2;
+      y2 = y3;
+      y3 = i;
+      
+      i = x2;
+      x2 = x3;
+      x3 = i;
+    }    
+    
+    var lslope = (x3-x1)/(y3-y1);
+    
+    var lx = x1;
   }
 }    
     
@@ -652,8 +709,10 @@ class EngineTest extends Engine {
   paint() {
     this.graphics.clear(Color.fromARGB(255,0,0,0));
     
-    this.graphics.drawLine(0,0,this.graphics.width,this.graphics.height,Color.black());
-    this.graphics.drawLine(this.graphics.width,0,0,this.graphics.height,Color.black());
+    //this.graphics.drawLine(0,0,this.graphics.width,this.graphics.height,Color.black());
+    //this.graphics.drawLine(this.graphics.width,0,0,this.graphics.height,Color.black());
+    this.graphics.drawHLine(0,this.graphics.width,(this.graphics.height*0.5)|0,Color.fromARGB(255,255,215,0));
+    
     
     this.entities.paint();
     
